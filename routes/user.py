@@ -15,6 +15,11 @@ def get_users():
     return conn.execute(users.select()).fetchall()
 
 
+@user.get('/users/{id}')
+def get_user(id: int):
+    return conn.execute(users.select().where(users.c.id == id)).first()
+
+
 @user.post('/')
 def create_user(user: User):
     new_user = {
