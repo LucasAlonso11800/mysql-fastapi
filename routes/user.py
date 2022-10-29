@@ -34,7 +34,19 @@ def create_user(user: User):
         .where(users.c.id == result.lastrowid)
     ).first()
 
+
 @user.delete('/users/{id}')
 def delete_user(id: int):
     conn.execute(users.delete().where(users.c.id == id))
     return Response(status_code=HTTP_204_NO_CONTENT)
+
+
+@user.put('/users/{id}')
+def update_user(id: int, user: User):
+    conn.execute(
+        users.update().values(
+            name=user.name,
+            email=user.email,
+            password=f.encrypt(user.password.encode('utf-8'))
+        ).where(users.c.id == id))
+    return conn.execute(users.select().where(users.c.id == id)).first()
