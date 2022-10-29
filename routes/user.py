@@ -1,8 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from config.db import conn
 from models.user import users
 from schemas.user import User
 from cryptography.fernet import Fernet
+from starlette.status import HTTP_204_NO_CONTENT
 
 key = Fernet.generate_key()
 f = Fernet(key)
@@ -32,3 +33,8 @@ def create_user(user: User):
         users.select()
         .where(users.c.id == result.lastrowid)
     ).first()
+
+@user.delete('/users/{id}')
+def delete_user(id: int):
+    conn.execute(users.delete().where(users.c.id == id))
+    return Response(status_code=HTTP_204_NO_CONTENT)
